@@ -82,6 +82,20 @@ uv run plot.py my_speed_data.csv -d 100 -u 50 -p 20
 ```
 This adds dotted reference lines for expected download (100 Mbps), expected upload (50 Mbps), and expected ping (20 ms).
 
+### 3. Merging CSV Files (`merge.py`)
 
+This script combines multiple measurement CSV files into a single file, sorting the rows chronologically ascending by timestamp.
 
+```bash
+uv run merge.py -i <csv_file_1> <csv_file_2> ... -o <output_csv_file>
+```
 
+**Options:**
+- `-i`, `--input <file1.csv> [file2.csv ...]`: One or more input CSV files to merge.
+- `-o`, `--output <file.csv>`: Output merged CSV file path.
+- `--drop-duplicates`: (Optional) Drop duplicate rows after merging.
+
+**Example:**
+```bash
+uv run merge.py -i internet_speed_part1.csv internet_speed_part2.csv -o combined_speed.csv
+```
