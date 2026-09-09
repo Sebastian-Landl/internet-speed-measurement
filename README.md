@@ -22,7 +22,7 @@ A typical workflow involves continuously logging measurements every 10 minutes a
 
 2. **Plot the collected data** with expected reference lines (100 Mbps download, 50 Mbps upload, and 20 ms ping):
    ```bash
-   uv run plot.py internet_speed_<timestamp>.csv -d 100 -u 50 -p 20
+   uv run plot.py -d 70 90 100 -u 15 35 50 -p 20 35 50 -i internet_speed_<timestamp>.csv
    ```
 
 
@@ -55,13 +55,14 @@ This script reads a generated CSV file and creates a high-resolution (300 DPI) P
 2. Ping over time (in ms).
 
 ```bash
-uv run plot.py <csv_file> [OPTIONS]
+uv run plot.py [csv_file] [OPTIONS]
 ```
 
 **Positional Arguments:**
-- `<csv_file>`: Path to the input CSV file.
+- `<csv_file>`: Path to the input CSV file (optional if `-i`/`--input` is provided).
 
 **Options:**
+- `-i`, `--input <file.csv>`: Path to the input CSV file
 - `-o`, `--output <file.png>`: Output PNG file path (default: same name as the input CSV, but with a `.png` extension)
 - `-d`, `--expected-download <mbps>`: Expected download speed in Mbps to draw a reference line
 - `-u`, `--expected-upload <mbps>`: Expected upload speed in Mbps to draw a reference line
@@ -80,5 +81,7 @@ Generate a plot with benchmark reference lines:
 uv run plot.py my_speed_data.csv -d 100 -u 50 -p 20
 ```
 This adds dotted reference lines for expected download (100 Mbps), expected upload (50 Mbps), and expected ping (20 ms).
+
+
 
 
