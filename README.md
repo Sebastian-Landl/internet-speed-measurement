@@ -64,6 +64,7 @@ uv run plot.py [csv_file] [OPTIONS]
 **Options:**
 - `-i`, `--input <file.csv>`: Path to the input CSV file
 - `-o`, `--output <file.png>`: Output PNG file path (default: same name as the input CSV, but with a `.png` extension)
+- `-w`, `--width <inches|auto>`: Plot width in inches, or `auto` to scale with timespan (default: `auto`)
 - `-d`, `--expected-download <mbps>`: Expected download speed in Mbps to draw a reference line
 - `-u`, `--expected-upload <mbps>`: Expected upload speed in Mbps to draw a reference line
 - `-p`, `--expected-ping <ms>`: Expected ping in ms to draw a reference line
@@ -75,6 +76,11 @@ Generate a plot for `my_speed_data.csv`:
 uv run plot.py my_speed_data.csv
 ```
 This will automatically generate `my_speed_data.png` in the same directory.
+
+Generate a plot with a fixed custom width (e.g., 20 inches):
+```bash
+uv run plot.py my_speed_data.csv -w 20
+```
 
 Generate a plot with benchmark reference lines:
 ```bash

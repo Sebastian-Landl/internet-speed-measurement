@@ -7,6 +7,28 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# Plot sizing configuration constants (in inches)
+DEFAULT_FIGURE_HEIGHT = 10.0
+DEFAULT_FIGURE_WIDTH = 12.0
+MIN_FIGURE_WIDTH = 12.0
+INCHES_PER_DAY = 20.0
+MAX_FIGURE_WIDTH = 300.0
+
+
+def parse_width(value: str):
+    """Parse the width argument: either 'auto' or a positive float (in inches)."""
+    if value.lower() == "auto":
+        return "auto"
+    try:
+        width = float(value)
+        if width <= 0:
+            raise ValueError()
+        return width
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            f"Invalid width '{value}': must be 'auto' or a positive number."
+        )
+
 
 def main():
     parser = argparse.ArgumentParser(description="Plot internet speed from CSV data.")
@@ -30,6 +52,13 @@ def main():
         type=str,
         default=None,
         help="Output PNG file path (default: same name as CSV with .png extension)",
+    )
+    parser.add_argument(
+        "-w",
+        "--width",
+        type=parse_width,
+        default="auto",
+        help="Plot width in inches or 'auto' to scale automatically with timespan (default: auto).",
     )
     parser.add_argument(
         "-d",
@@ -92,6 +121,10 @@ def main():
 
     df["timestamp"] = pd.to_datetime(df["timestamp"])
 
+    if df.empty:
+        print("Error: CSV file contains no data.")
+        return
+
     # Check if necessary columns exist
     required_columns = ["download_mbps", "upload_mbps", "ping_ms"]
     for col in required_columns:
@@ -147,10 +180,25 @@ def main():
                     label=f"Expected {label_prefix} Max ({values[2]} {unit})",
                 )
 
-    print("Generating plots...")
+    if args.width == "auto":
+        if len(df) > 1:
+            timespan = df["timestamp"].max() - df["timestamp"].min()
+            days = timespan.total_seconds() / 86400.0
+            width = max(MIN_FIGURE_WIDTH, days * INCHES_PER_DAY)
+        else:
+            width = DEFAULT_FIGURE_WIDTH
+
+        if MAX_FIGURE_WIDTH is not None:
+            width = min(MAX_FIGURE_WIDTH, width)
+    else:
+        width = args.width
+
+    print(f"Generating plots (width: {width:.2f} inches)...")
 
     # Create a figure with 2 subplots (vertically stacked)
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
+    fig, (ax1, ax2) = plt.subplots(
+        2, 1, figsize=(width, DEFAULT_FIGURE_HEIGHT), sharex=True
+    )
 
     # Subplot 1: Download and Upload speed
     ax1.plot(
